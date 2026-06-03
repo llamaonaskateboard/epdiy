@@ -1,6 +1,9 @@
 #pragma once
 
 #include "driver/gpio.h"
+#include "hal/gpio_ll.h"
+
+#include <esp_attr.h>
 
 #if defined(CONFIG_EPD_BOARD_REVISION_V5) || defined(CONFIG_EPD_BOARD_REVISION_V6)
 #define D7 GPIO_NUM_23

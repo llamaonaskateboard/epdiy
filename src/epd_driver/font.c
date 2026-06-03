@@ -3,7 +3,7 @@
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #if ESP_IDF_VERSION < (4, 0, 0) || ARDUINO_ARCH_ESP32
-#include "rom/miniz.h"
+#include "miniz.h"
 #else
 #include "esp32/rom/miniz.h"
 #endif
@@ -93,7 +93,7 @@ const EpdGlyph* epd_get_glyph(const EpdFont *font, uint32_t code_point) {
   return NULL;
 }
 
-static int uncompress(uint8_t *dest, uint32_t uncompressed_size, const uint8_t *source, uint32_t source_size) {
+static int uncompress(uint8_t *dest, size_t uncompressed_size, const uint8_t *source, size_t source_size) {
     if (uncompressed_size == 0 || dest == NULL || source_size == 0 || source == NULL) {
         return -1;
     }

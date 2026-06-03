@@ -2,6 +2,7 @@
 #include "display_ops.h"
 #include "driver/periph_ctrl.h"
 #if ESP_IDF_VERSION < (4, 0, 0) || ARDUINO_ARCH_ESP32
+#include "rom/gpio.h"
 #include "rom/lldesc.h"
 #else
 #include "esp32/rom/lldesc.h"
@@ -186,13 +187,9 @@ void i2s_bus_init(uint32_t epd_row_width) {
   // (Smallest possible divider according to the spec).
   dev->sample_rate_conf.tx_bck_div_num = 2;
 
-#if defined(CONFIG_EPD_DISPLAY_TYPE_ED097OC4_LQ)
-  // Initialize Audio Clock (APLL) for 120 Mhz.
-  rtc_clk_apll_enable(1, 0, 0, 8, 0);
-#else
   // Initialize Audio Clock (APLL) for 100 Mhz.
-  rtc_clk_apll_enable(1, 0, 0, 8, 0);
-#endif
+  rtc_clk_apll_enable(true);
+  rtc_clk_apll_coeff_set(0, 0, 0, 8);
 
   // Set Audio Clock Dividers
   dev->clkm_conf.val = 0;
@@ -275,6 +272,8 @@ void i2s_deinit() {
   free((void *)i2s_state.dma_desc_a);
   free((void *)i2s_state.dma_desc_b);
 
-  rtc_clk_apll_enable(0, 0, 0, 8, 0);
+  rtc_clk_apll_coeff_set(0, 0, 0, 8);
+  rtc_clk_apll_enable(true);
+
   periph_module_disable(PERIPH_I2S1_MODULE);
 }

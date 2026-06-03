@@ -1,6 +1,7 @@
 #include "rmt_pulse.h"
 #include "driver/rmt.h"
 #include "esp_system.h"
+#include "soc/rmt_struct.h"
 
 static intr_handle_t gRMT_intr_handle = NULL;
 
@@ -17,6 +18,14 @@ static void IRAM_ATTR rmt_interrupt_handler(void *arg) {
   rmt_tx_done = true;
   RMT.int_clr.val = RMT.int_st.val;
 }
+
+// The extern line is declared in esp-idf/components/driver/deprecated/rmt_legacy.c. It has access
+// to RMTMEM through the rmt_private.h header which we can't access outside the sdk. Declare our own
+// extern here to properly use the RMTMEM smybol defined in
+// components/soc/[target]/ld/[target].peripherals.ld Also typedef the new rmt_mem_t struct to the
+// old rmt_block_mem_t struct. Same data fields, different names
+typedef rmt_mem_t rmt_block_mem_t;
+extern rmt_block_mem_t RMTMEM;
 
 void rmt_pulse_init(gpio_num_t pin) {
 
